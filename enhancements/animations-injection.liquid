@@ -1,0 +1,277 @@
+{%- comment -%}
+  ANIMATION ENHANCEMENTS - Inject into existing sections
+  Dubai Museum of the Future style animations
+  NO NEW SECTIONS - Just CSS + JS additions
+{%- endcomment -%}
+
+<style>
+/* Global Animation Variables */
+:root {
+  --animation-duration: 0.8s;
+  --animation-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animation-delay-short: 100ms;
+  --animation-delay-medium: 200ms;
+  --color-gold: #d4af37;
+}
+
+/* PARALLAX & SCROLL EFFECTS */
+[data-parallax] {
+  will-change: transform;
+}
+
+[data-scroll-fade] {
+  opacity: 0;
+  animation: scrollFadeIn var(--animation-duration) var(--animation-easing) forwards;
+}
+
+@keyframes scrollFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* PRODUCT CARD ENHANCEMENTS */
+.product-item, 
+[data-product-card],
+.product,
+.product-card {
+  transition: all 0.3s ease;
+  animation: productCardEnter 0.6s var(--animation-easing) forwards;
+}
+
+@keyframes productCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Stagger for multiple cards */
+.product-item:nth-child(1) { animation-delay: 0ms; }
+.product-item:nth-child(2) { animation-delay: 100ms; }
+.product-item:nth-child(3) { animation-delay: 200ms; }
+.product-item:nth-child(4) { animation-delay: 300ms; }
+.product-item:nth-child(n+5) { animation-delay: 400ms; }
+
+/* HOVER EFFECTS */
+.product-item:hover,
+[data-product-card]:hover,
+.product:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 48px rgba(212, 175, 55, 0.2);
+}
+
+.product-item img,
+[data-product-image],
+.product img {
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.product-item:hover img,
+[data-product-card]:hover [data-product-image],
+.product:hover img {
+  transform: scale(1.08) rotate(0.5deg);
+}
+
+/* IMAGE OVERLAY EFFECTS */
+[data-product-image-wrapper]::after,
+.product-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+[data-product-card]:hover [data-product-image-wrapper]::after,
+.product:hover .product-image::after {
+  opacity: 1;
+}
+
+/* TEXT ANIMATIONS */
+[data-product-title],
+.product-title,
+h3.product-name {
+  transition: color 0.3s ease;
+}
+
+[data-product-card]:hover [data-product-title],
+.product:hover .product-title,
+.product:hover h3.product-name {
+  color: var(--color-gold);
+}
+
+/* PRICE SLIDE UP */
+[data-product-price],
+.product-price {
+  animation: priceSlideIn 0.6s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+@keyframes priceSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* BUTTON EFFECTS */
+.button, 
+[data-button],
+.product .btn,
+.add-to-cart {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: var(--color-gold);
+  color: #0a0a0a;
+}
+
+.button:hover,
+[data-button]:hover,
+.product .btn:hover,
+.add-to-cart:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(212, 175, 55, 0.4);
+}
+
+/* SCROLL REVEAL SECTIONS */
+[data-reveal] {
+  opacity: 0;
+  animation: revealOnScroll 1s ease-out forwards;
+}
+
+@keyframes revealOnScroll {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* SLIDESHOW ENHANCEMENTS */
+.slideshow, 
+[data-slideshow],
+.slide {
+  animation: slideshowFade 0.8s ease-in-out;
+}
+
+@keyframes slideshowFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* BANNER PARALLAX */
+[data-banner], 
+.banner {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-banner] img,
+.banner img {
+  will-change: transform;
+  transition: transform 0.8s ease-out;
+}
+
+/* FORM FOCUS EFFECTS */
+input, textarea, select {
+  transition: all 0.3s ease;
+  border-color: transparent;
+}
+
+input:focus, 
+textarea:focus, 
+select:focus {
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.4);
+  border-color: var(--color-gold);
+}
+
+/* LINK ANIMATIONS */
+a, 
+[data-link] {
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+a:hover,
+[data-link]:hover {
+  color: var(--color-gold);
+}
+
+/* MICRO INTERACTIONS */
+[data-micro] {
+  transition: all 0.2s ease;
+}
+
+[data-micro]:active {
+  transform: scale(0.98);
+}
+
+[data-micro]:hover {
+  transform: scale(1.02);
+}
+</style>
+
+<script>
+// PARALLAX SCROLL EFFECT
+document.addEventListener('DOMContentLoaded', () => {
+  const parallaxElements = document.querySelectorAll('[data-parallax]');
+  
+  window.addEventListener('scroll', () => {
+    parallaxElements.forEach(el => {
+      const scrolled = window.pageYOffset;
+      const offset = scrolled * 0.5;
+      el.style.transform = `translateY(${offset}px)`;
+    });
+  });
+
+  // INTERSECTION OBSERVER FOR SCROLL REVEALS
+  const reveals = document.querySelectorAll('[data-reveal]');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(reveal => observer.observe(reveal));
+
+  // STAGGER ANIMATION ON LOAD
+  const products = document.querySelectorAll('[data-stagger]');
+  products.forEach((product, index) => {
+    product.style.animationDelay = `${index * 100}ms`;
+  });
+});
+
+// SCROLL PARALLAX FOR BACKGROUNDS
+window.addEventListener('scroll', () => {
+  const banners = document.querySelectorAll('[data-banner-parallax]');
+  banners.forEach(banner => {
+    const scrolled = window.pageYOffset;
+    const parallax = scrolled * 0.3;
+    banner.style.backgroundPosition = `center ${parallax}px`;
+  });
+});
+</script>
