@@ -1,0 +1,140 @@
+{%- comment -%}
+  Blog Product Recommendation Card - Reuses exact collection card styling
+  
+  Accepts:
+  - product: {Object} Product Liquid object
+  - show_reviews: {Boolean} Show JudgeMe reviews
+  - show_badge: {Boolean} Show sale badge
+  
+  Usage:
+  {% render 'blog-product-recommendation-card', product: product %}
+{%- endcomment -%}
+
+{%- liquid
+    assign show_reviews = show_reviews | default: true
+    assign show_badge = show_badge | default: true
+    assign product_swatch_option = settings.swatch | downcase
+    assign isColor = false
+    assign variant_img = ''
+    
+    for option in product.options_with_values
+        assign option_name = option.name | downcase
+        if product_swatch_option contains option_name
+            assign isColor = true
+            assign index = forloop.index0
+            assign position = forloop.index | minus: 1
+            assign variant_selected = option.selected_value
+          break
+        else 
+            assign position = 0
+            assign variant_selected = nil
+        endif
+    endfor
+    
+    assign media_size = 'square'
+    assign featured_media_aspect_ratio = product.featured_media.aspect_ratio
+    if product.featured_media.aspect_ratio == nil
+        assign featured_media_aspect_ratio = 1
+    endif
+    
+    assign show_price = true
+-%}
+
+<div class="blog-product-card product-item" data-product-id="{{ product.id }}" data-json-product='{\"id\": {{product.id}},\"handle\": \"{{product.handle}}\",\"media\": {{product.media | json | escape}},\"variants\": {{ product.variants | json | escape}}}'>
+    <div class="card">
+        <div class="card-product">
+            <div class="card-product__wrapper">
+                
+                {%- if show_badge -%}
+                    {% render 'product-badge', product: product, class: 'card__badge', badge_detail: true %}
+                {%- endif -%}
+                
+                <!-- Product Image -->
+                <div class="card-media card-media--{{ media_size }}" style="padding-bottom: 100%;">
+                    {% render 'image-product-card', product_card_product: product, has_video: false %}
+                    <a class="card-link" href="{{ product.url }}" title="{{ product.title | escape }}"></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Product Information -->
+        <div class="card-information">
+            <div class="card-information__wrapper">
+                
+                <!-- Product Title -->
+                <h3 class="card__heading">
+                    <a class="card-title link-underline card-title-ellipsis" href="{{ product.url }}" data-product-title="{{ product.title | escape }}" data-product-url="{{ product.url }}">
+                        {{ product.title | escape }}
+                    </a>
+                </h3>
+                
+                <!-- JudgeMe Reviews -->
+                {%- if show_reviews and product.metafields.judgeme.widget != blank -%}
+                    <div class="ss-card-reviews">{{ product.metafields.judgeme.widget }}</div>
+                {%- endif -%}
+                
+                <!-- Scent Notes (if available via metafield) -->
+                {%- if product.metafields.custom.scent_notes != blank -%}
+                    <div class="blog-product-card__scent-notes">
+                        <span class="scent-notes-label">Scent:</span>
+                        <span class="scent-notes-value">{{ product.metafields.custom.scent_notes }}</span>
+                    </div>
+                {%- endif -%}
+                
+                <!-- Price -->
+                {%- if show_price -%}
+                    <div class="card-price">
+                        {% render 'price', product: product, price_class: '', hasCountdown: false %}
+                    </div>
+                {%- endif -%}
+                
+                <!-- Color Swatch -->
+                {%- if isColor -%}
+                    <div class="blog-product-card__swatch">
+                        {% render 'product-swatch', product: product, variant_selected: variant_selected, index: index %}
+                    </div>
+                {%- endif -%}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.blog-product-card {
+    display: block;
+}
+
+.blog-product-card .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.blog-product-card .card-product {
+    flex: 0 0 auto;
+}
+
+.blog-product-card .card-information {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-product-card__scent-notes {
+    display: block;
+    font-size: calc(var(--font-body-size) - 2px);
+    color: var(--color-text-secondary, #666);
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+.blog-product-card__scent-notes .scent-notes-label {
+    font-weight: var(--font-weight-medium);
+    margin-right: 4px;
+}
+
+.blog-product-card__swatch {
+    margin-top: auto;
+    padding-top: 12px;
+}
+</style>
